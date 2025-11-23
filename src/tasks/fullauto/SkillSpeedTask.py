@@ -18,12 +18,15 @@ class SkillSpeedTask(BaseListenerTask, BaseCombatTask, BaseDNATask, TriggerTask)
     """Skill Speed Techniques for Duet Night Abyss"""
     
     def __init__(self, *args, **kwargs):
+        # Set group_name and group_icon BEFORE calling super().__init__()
+        # This ensures they are set before the task is registered
+        self.group_name = "Chaoga's mod"
+        self.group_icon = FluentIcon.CAFE
+        
         super().__init__(*args, **kwargs)
         self.name = "Skill Speed"
         self.description = "Speed techniques: Rhythm, Shoot Cancel, and more"
         self.icon = FluentIcon.FLAG
-        self.group_name = "Chaoga's mod"
-        self.group_icon = FluentIcon.CAFE
         
         # Setup listener but remove activation key config (we use individual hotkeys)
         self.setup_listener_config()
@@ -40,8 +43,8 @@ class SkillSpeedTask(BaseListenerTask, BaseCombatTask, BaseDNATask, TriggerTask)
             # Rapid Fire (Hold Right Click and spam Ctrl)
             'Enable Rapid Fire Cancel': True,
             '<span style="color: #3A7FCF;">Rapid Fire Cancel Hotkey</span>': 'f6',
-            '<span style="color: #3A7FCF;">Rapid Fire Cancel Interval</span>': 0.1,
-            '<span style="color: #3A7FCF;">Rapid Fire Cancel Duration</span>': 1.0,
+            '<span style="color: #3A7FCF;">Rapid Fire Cancel Interval</span>': 0.02,
+            '<span style="color: #3A7FCF;">Rapid Fire Cancel Duration</span>': 0.02,
             
             # Rhythm Technique (E -> Hold Left Click -> Right Click)
             'Enable Rhythm': True,
@@ -235,8 +238,8 @@ class SkillSpeedTask(BaseListenerTask, BaseCombatTask, BaseDNATask, TriggerTask)
             return
         
         try:
-            interval = self.config.get('<span style="color: #3A7FCF;">Rapid Fire Cancel Interval</span>', 0.1)
-            duration = self.config.get('<span style="color: #3A7FCF;">Rapid Fire Cancel Duration</span>', 1.0)  # How long to hold right click
+            interval = self.config.get('<span style="color: #3A7FCF;">Rapid Fire Cancel Interval</span>', 0.02)
+            duration = self.config.get('<span style="color: #3A7FCF;">Rapid Fire Cancel Duration</span>', 0.02)  # How long to hold right click
             
             # Hold right click
             self.mouse_down(key='right')
