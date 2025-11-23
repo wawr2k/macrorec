@@ -342,7 +342,7 @@ def copy_assets_folder(working_dir, script_dir):
         print(f"     If assets were included in the package, manually copy assets/ folder to [working folder]/assets/")
 
 def modify_one_time_task_tab(working_dir):
-    """Modify OneTimeTaskTab.py to include trigger tasks with matching group_name"""
+    """Modify OneTimeTaskTab.py to include trigger tasks with matching group_name and filter by group_name"""
     onetime_tab_path = os.path.join(working_dir, "ok", "gui", "tasks", "OneTimeTaskTab.py")
     
     if not os.path.exists(onetime_tab_path):
@@ -358,10 +358,9 @@ def modify_one_time_task_tab(working_dir):
         return False
     
     lines = content.split('\n')
-    new_lines = []
-    inserted = False
     import_updated = False
-    modification_exists = "Add trigger tasks that share a group_name" in content
+    filtering_exists = "Determine if all tasks share the same group_name" in content
+    trigger_support_exists = "Add trigger tasks that share a group_name" in content
     
     # First, ALWAYS check and fix imports (even if modification exists)
     # Find the first "from ok import" line
@@ -399,55 +398,152 @@ def modify_one_time_task_tab(working_dir):
                 lines[import_line_index] = 'from ok import Logger, TriggerTask'
             import_updated = True
     
-    # If modification already exists and imports are correct, we're done
-    if modification_exists and not import_updated:
-        print(f"  ✓ OneTimeTaskTab.py already includes trigger task support with correct imports")
+    # If both modifications already exist and imports are correct, we're done
+    if filtering_exists and trigger_support_exists and not import_updated:
+        print(f"  ✓ OneTimeTaskTab.py already includes group_name filtering and trigger task support with correct imports")
         return True
     
-    # Now find insertion point - after "Add onetime tasks" section
+    # Find the __init__ method and replace its body
+    new_lines = []
+    in_init = False
+    init_indent = 0
+    init_start = -1
+    
     for i, line in enumerate(lines):
-        new_lines.append(line)
+        # Find the start of __init__ method
+        if 'def __init__(self, tasks):' in line:
+            in_init = True
+            init_start = i
+            init_indent = len(line) - len(line.lstrip())
+            new_lines.append(line)  # Keep the method signature
+            continue
         
-        # Look for the end of "Add onetime tasks" section
-        # Pattern: after "self.add_widget(task_card)" and before next major section
-        if 'self.add_widget(task_card)' in line and not inserted:
-            # Check if this is the end of the onetime tasks loop
-            # Look ahead to see if next non-empty line is a comment or different section
-            j = i + 1
-            while j < len(lines) and (lines[j].strip() == '' or lines[j].strip().startswith('#')):
-                j += 1
+        if in_init:
+            # Check if we've reached the end of the method
+            # Look for next method definition (starts with 'def ' at same or less indentation)
+            # or empty line followed by method definition
+            stripped = line.strip()
+            current_indent = len(line) - len(line.lstrip()) if stripped else init_indent
             
-            # If next line is "self.keep_info_when_done" or another section, insert here
-            if j < len(lines) and ('self.keep_info_when_done' in lines[j] or 'def ' in lines[j]):
-                new_lines.append('')
-                new_lines.append('        # Add trigger tasks that share a group_name with onetime tasks')
-                new_lines.append('        for task in og.executor.trigger_tasks:')
-                new_lines.append('            if isinstance(task, TriggerTask) and hasattr(task, \'group_name\') and task.group_name:')
-                new_lines.append('                if task.group_name in group_names:')
-                new_lines.append('                    # Show Enable/Disable for trigger tasks')
-                new_lines.append('                    task_card = TaskCard(task, False)')
-                new_lines.append('                    self.add_widget(task_card)')
-                new_lines.append('                    self.tasks.append(task)  # Add to tasks list for in_current_list check')
-                inserted = True
+            # Check if this is the start of the next method
+            if stripped.startswith('def ') and current_indent <= init_indent:
+                # We've reached the next method, insert new body before it
+                in_init = False
+                
+                # Insert the new __init__ body
+                new_init_body = [
+                    '        super().__init__()',
+                    '        ',
+                    '        # Determine if all tasks share the same group_name',
+                    '        # If so, filter to only show tasks with that group_name',
+                    '        # Otherwise, show all tasks (default tab behavior)',
+                    '        group_names = set()',
+                    '        for task in tasks:',
+                    '            if hasattr(task, \'group_name\') and task.group_name:',
+                    '                group_names.add(task.group_name)',
+                    '        ',
+                    '        # Filter tasks: if all tasks have the same group_name, only show those',
+                    '        # Otherwise, show all tasks (default tab for tasks without group_name or mixed groups)',
+                    '        filtered_tasks = []',
+                    '        if len(group_names) == 1:',
+                    '            # All tasks share the same group_name, filter to only show those',
+                    '            target_group_name = list(group_names)[0]',
+                    '            for task in tasks:',
+                    '                if hasattr(task, \'group_name\') and task.group_name == target_group_name:',
+                    '                    filtered_tasks.append(task)',
+                    '        else:',
+                    '            # Mixed or no group_names - show all tasks (default tab)',
+                    '            filtered_tasks = tasks',
+                    '        ',
+                    '        self.tasks = filtered_tasks',
+                    '        ',
+                    '        # Collect group names from filtered onetime tasks',
+                    '        filtered_group_names = set()',
+                    '        for task in filtered_tasks:',
+                    '            if hasattr(task, \'group_name\') and task.group_name:',
+                    '                filtered_group_names.add(task.group_name)',
+                    '        ',
+                    '        # Add filtered onetime tasks',
+                    '        for task in filtered_tasks:',
+                    '            task_card = TaskCard(task, True)',
+                    '            self.add_widget(task_card)',
+                    '        ',
+                    '        # Add trigger tasks that share a group_name with filtered onetime tasks',
+                    '        for task in og.executor.trigger_tasks:',
+                    '            if isinstance(task, TriggerTask) and hasattr(task, \'group_name\') and task.group_name:',
+                    '                if task.group_name in filtered_group_names:',
+                    '                    # Show Enable/Disable for trigger tasks',
+                    '                    task_card = TaskCard(task, False)',
+                    '                    self.add_widget(task_card)',
+                    '                    self.tasks.append(task)  # Add to tasks list for in_current_list check',
+                    '        ',
+                    '        self.keep_info_when_done = True'
+                ]
+                new_lines.extend(new_init_body)
+                new_lines.append('')  # Add blank line after method
+                new_lines.append(line)  # Add the line that ended the method (next method)
+                continue
+        
+        if not in_init:
+            new_lines.append(line)
     
-    if not inserted:
-        # Fallback: insert before "self.keep_info_when_done"
-        for i, line in enumerate(new_lines):
-            if 'self.keep_info_when_done' in line and not inserted:
-                new_lines.insert(i, '                    self.tasks.append(task)  # Add to tasks list for in_current_list check')
-                new_lines.insert(i, '                    self.add_widget(task_card)')
-                new_lines.insert(i, '                    task_card = TaskCard(task, False)')
-                new_lines.insert(i, '                    # Show Enable/Disable for trigger tasks')
-                new_lines.insert(i, '                if task.group_name in group_names:')
-                new_lines.insert(i, '            if isinstance(task, TriggerTask) and hasattr(task, \'group_name\') and task.group_name:')
-                new_lines.insert(i, '        for task in og.executor.trigger_tasks:')
-                new_lines.insert(i, '        # Add trigger tasks that share a group_name with onetime tasks')
-                new_lines.insert(i, '')
-                inserted = True
+    # If we're still in __init__ at the end, we need to close it
+    if in_init:
+        # Insert the new __init__ body
+        new_init_body = [
+            '        super().__init__()',
+            '        ',
+            '        # Determine if all tasks share the same group_name',
+            '        # If so, filter to only show tasks with that group_name',
+            '        # Otherwise, show all tasks (default tab behavior)',
+            '        group_names = set()',
+            '        for task in tasks:',
+            '            if hasattr(task, \'group_name\') and task.group_name:',
+            '                group_names.add(task.group_name)',
+            '        ',
+            '        # Filter tasks: if all tasks have the same group_name, only show those',
+            '        # Otherwise, show all tasks (default tab for tasks without group_name or mixed groups)',
+            '        filtered_tasks = []',
+            '        if len(group_names) == 1:',
+            '            # All tasks share the same group_name, filter to only show those',
+            '            target_group_name = list(group_names)[0]',
+            '            for task in tasks:',
+            '                if hasattr(task, \'group_name\') and task.group_name == target_group_name:',
+            '                    filtered_tasks.append(task)',
+            '        else:',
+            '            # Mixed or no group_names - show all tasks (default tab)',
+            '            filtered_tasks = tasks',
+            '        ',
+            '        self.tasks = filtered_tasks',
+            '        ',
+            '        # Collect group names from filtered onetime tasks',
+            '        filtered_group_names = set()',
+            '        for task in filtered_tasks:',
+            '            if hasattr(task, \'group_name\') and task.group_name:',
+            '                filtered_group_names.add(task.group_name)',
+            '        ',
+            '        # Add filtered onetime tasks',
+            '        for task in filtered_tasks:',
+            '            task_card = TaskCard(task, True)',
+            '            self.add_widget(task_card)',
+            '        ',
+            '        # Add trigger tasks that share a group_name with filtered onetime tasks',
+            '        for task in og.executor.trigger_tasks:',
+            '            if isinstance(task, TriggerTask) and hasattr(task, \'group_name\') and task.group_name:',
+            '                if task.group_name in filtered_group_names:',
+            '                    # Show Enable/Disable for trigger tasks',
+            '                    task_card = TaskCard(task, False)',
+            '                    self.add_widget(task_card)',
+            '                    self.tasks.append(task)  # Add to tasks list for in_current_list check',
+            '        ',
+            '        self.keep_info_when_done = True'
+        ]
+        new_lines.extend(new_init_body)
     
-    if not inserted:
-        print(f"  ✗ ERROR: Could not find insertion point in OneTimeTaskTab.py")
-        print(f"     Please manually add the trigger task code to OneTimeTaskTab.py")
+    # If we didn't find the __init__ method, try a different approach
+    if init_start == -1:
+        print(f"  ✗ ERROR: Could not find __init__ method in OneTimeTaskTab.py")
+        print(f"     Please manually update OneTimeTaskTab.py")
         return False
     
     # Write back
@@ -455,7 +551,7 @@ def modify_one_time_task_tab(working_dir):
         new_content = '\n'.join(new_lines)
         with open(onetime_tab_path, 'w', encoding='utf-8') as f:
             f.write(new_content)
-        print(f"  ✓ Successfully modified OneTimeTaskTab.py to include trigger tasks")
+        print(f"  ✓ Successfully modified OneTimeTaskTab.py to include group_name filtering and trigger task support")
         return True
     except Exception as e:
         print(f"  ✗ ERROR: Failed to write OneTimeTaskTab.py: {e}")
