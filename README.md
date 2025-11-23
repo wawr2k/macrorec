@@ -69,15 +69,14 @@ After downloading, extract the zip file and follow the installation instructions
    - **Working folder location**: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
    - **Do NOT copy to the `repo` folder** - ok-dna runs from the `working` folder, not the repo folder
    - The installation script (`add_autofish_to_config.bat`) automatically uses the working folder
-4. Copy files to your ok-dna working installation:
-   - Copy `AutoFishMultiSpotTask.py` to: `[ok-dna working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
-   - Copy `SkillSpeedTask.py` to: `[ok-dna working folder]\src\tasks\trigger\SkillSpeedTask.py`
+4. Copy image and asset files to your ok-dna working installation:
    - Copy the `mod\fish\` folder to: `[ok-dna working folder]\mod\fish\`
    - If `assets\` folder is included, copy it to: `[ok-dna working folder]\assets\`
    - **Important**: If you already have an `assets\` folder, it will be backed up to `assets - original\` before replacement
-5. Run `add_autofish_to_config.bat` to automatically install everything:
+   - **Note**: Python files (AutoFishMultiSpotTask.py and SkillSpeedTask.py) are handled automatically by the installation script in Step 5
+5. Run `add_autofish_to_config.bat` to automatically install the Python files and update config:
    - **Automatically finds** your ok-dna **working** directory (NOT the repo folder)
-   - **Automatically copies** Python files to the correct folders in the **working** directory:
+   - **Automatically copies** Python files from the extracted package to the correct folders in the **working** directory:
      - `AutoFishMultiSpotTask.py` → `[working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
      - `SkillSpeedTask.py` → `[working folder]\src\tasks\trigger\SkillSpeedTask.py`
    - **Automatically adds** tasks to `config.py` in the **working** folder:
@@ -85,6 +84,7 @@ After downloading, extract the zip file and follow the installation instructions
      - Adds `SkillSpeedTask` to `trigger_tasks` list
    - **Important**: The script ONLY works with the **working** folder (`ok-dna\data\apps\ok-dna\working`), NOT the repo folder
    - The script will automatically find your ok-dna installation
+   - **Note**: Make sure the extracted package files (Python files) are accessible - the script looks for them in the same directory or extracted package structure
    - Or manually add these lines to `config.py` in the **working** folder (NOT repo folder):
      - In `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
      - In `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
