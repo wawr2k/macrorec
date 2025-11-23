@@ -37,6 +37,24 @@ This package includes tasks from the **Chaoga's mod** collection in ok-dna:
 - Python 3.10+ (included with ok-dna)
 - Windows OS
 
+## Download
+
+### Latest Release
+
+Download the latest version as a zip file:
+
+**[📦 Download Latest Release (ZIP)](https://github.com/wawr2k/macrorec/archive/refs/heads/main.zip)**
+
+This will download the complete package including:
+- AutoFishMultiSpotTask.py
+- SkillSpeedTask.py
+- All mod/fish/ image files
+- Assets folder (English client assets)
+- Installation scripts
+- README.md
+
+After downloading, extract the zip file and follow the installation instructions below.
+
 ## Installation
 
 ### Method 1: Automatic Installation (Recommended)
@@ -82,7 +100,11 @@ This package includes tasks from the **Chaoga's mod** collection in ok-dna:
 3. Select a task from the list:
    - **"Auto Fish Multi Spot"** - For automated fishing across multiple spots
    - **"Skill Speed"** - For combat speed techniques (trigger task, uses hotkeys)
-3. Configure your settings:
+
+### Auto Fish Multi Spot
+
+1. Select **"Auto Fish Multi Spot"** from the task list
+2. Configure your settings:
    - **Max Rounds Per Spot**: Number of fish to catch per spot (0 = unlimited)
    - **Enable Purgatorio/Icelake/Sewers**: Checkboxes to enable/disable each spot
    - **END_WAIT_SPACE**: Wait time after catching a fish (default: 0.5 seconds)
@@ -98,6 +120,8 @@ This package includes tasks from the **Chaoga's mod** collection in ok-dna:
 
 ## Configuration Options
 
+### Auto Fish Multi Spot
+
 | Option | Description | Default |
 |--------|-------------|---------|
 | Max Rounds Per Spot | Number of fish to catch per spot (0 = unlimited) | 0 |
@@ -110,6 +134,28 @@ This package includes tasks from the **Chaoga's mod** collection in ok-dna:
 | MAX_END_SEC | End phase timeout (seconds) | 20.0 |
 | No Fish Timeout | Time to wait for "no more fish" detection (seconds) | 30.0 |
 | PNG Check Timeout | Time to wait for PNG image before W key (seconds) | 10.0 |
+
+### Skill Speed
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| Enable Rapid Fire Cancel | Enable/disable rapid fire technique | True |
+| Rapid Fire Cancel Hotkey | Hotkey to activate rapid fire | F6 |
+| Rapid Fire Cancel Interval | Interval between Ctrl presses (seconds) | 0.1 |
+| Rapid Fire Cancel Duration | How long to hold right click (seconds) | 1.0 |
+| Enable Rhythm | Enable/disable Rhythm technique | True |
+| Rhythm Hotkey | Hotkey to activate Rhythm | F7 |
+| Rhythm Skill Delay | Delay after skill before charge (seconds) | 0.05 |
+| Rhythm Charge Duration | How long to hold charge attack (seconds) | 0.1 |
+| Rhythm Shoot Delay | Delay before shooting (seconds) | 0.05 |
+| Enable Quick Skill Cancel | Enable/disable quick skill cancel | True |
+| Quick Skill Cancel Hotkey | Hotkey to activate quick skill cancel | F8 |
+| Quick Skill Cancel Delay | Delay between skill and cancel (seconds) | 0.05 |
+| Enable Skill Charge Combo | Enable/disable skill charge combo | True |
+| Skill Charge Combo Hotkey | Hotkey to activate skill charge combo | F9 |
+| Skill Charge Combo Delay | Delay between actions (seconds) | 0.1 |
+| Enable Change Char | Enable/disable change character | True |
+| Change Char Hotkey | Hotkey to change character | F10 |
 
 ## How It Works
 
@@ -239,7 +285,7 @@ This project is provided as-is for personal use. Please refer to ok-dna's licens
 - Built for [ok-dna](https://github.com/BnanZ0/ok-duet-night-abyss) by BnanZ0
 - Fishing logic integrated from AutoFishTask
 - Image-based navigation for improved reliability
-- **English assets provided by Maverick** - All image recognition assets (inventory buttons, menus, maps, etc.) were captured and optimized for the English client by Maverick
+- **English assets provided by Maverick** - The `assets/` folder (result.json and images/) was captured and optimized for the English client by Maverick
 
 ## Disclaimer
 
