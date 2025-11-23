@@ -48,8 +48,6 @@ if check_file_corruption():
 CONFIG_FILE = "src/config.py"
 ONETIME_TASK_ENTRY = '        ["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],'
 TRIGGER_TASK_ENTRY = '        ["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],'
-# Also add SkillSpeedTask to onetime_tasks so it appears in both tabs
-ONETIME_SKILLSPEED_ENTRY = '        ["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],'
 
 def find_okdna_working_dir():
     """Try to find the ok-dna working directory"""
@@ -139,7 +137,7 @@ def find_file_in_package(script_dir, relative_path, show_debug=False):
 
 def copy_python_files(working_dir, script_dir):
     """Copy Python task files to correct folders"""
-    print("\n[1/6] Copying Python task files...")
+    print("\n[1/5] Copying Python task files...")
     print(f"  Searching for files from: {script_dir}")
     
     errors = []
@@ -236,7 +234,7 @@ def copy_python_files(working_dir, script_dir):
 
 def copy_mod_fish_folder(working_dir, script_dir):
     """Copy mod/fish/ folder with all PNG images"""
-    print("\n[2/6] Copying mod/fish/ folder...")
+    print("\n[2/5] Copying mod/fish/ folder...")
     
     # Find mod/fish source - check multiple possible locations
     mod_fish_sources = [
@@ -284,7 +282,7 @@ def copy_mod_fish_folder(working_dir, script_dir):
 
 def copy_assets_folder(working_dir, script_dir):
     """Copy assets/ folder with backup if it already exists"""
-    print("\n[3/6] Copying assets/ folder...")
+    print("\n[3/5] Copying assets/ folder...")
     
     # Find assets source - check multiple possible locations
     assets_sources = [
@@ -477,16 +475,15 @@ def main():
     copy_assets_folder(working_dir, script_dir)
     
     # Step 4: Add AutoFishMultiSpotTask to onetime_tasks
-    print("\n[4/6] Adding AutoFishMultiSpotTask to config.py...")
+    print("\n[4/5] Adding AutoFishMultiSpotTask to config.py...")
     add_task_to_config(working_dir, ONETIME_TASK_ENTRY, "onetime_tasks", "AutoFishMultiSpotTask")
     
     # Step 5: Add SkillSpeedTask to trigger_tasks
-    print("\n[5/6] Adding SkillSpeedTask to trigger_tasks in config.py...")
+    print("\n[5/5] Adding SkillSpeedTask to config.py...")
     add_task_to_config(working_dir, TRIGGER_TASK_ENTRY, "trigger_tasks", "SkillSpeedTask")
     
-    # Step 6: Add SkillSpeedTask to onetime_tasks (so it appears in both tabs)
-    print("\n[6/6] Adding SkillSpeedTask to onetime_tasks (so it appears in Chaoga's mod tab too)...")
-    add_task_to_config(working_dir, ONETIME_SKILLSPEED_ENTRY, "onetime_tasks", "SkillSpeedTask")
+    print("\n  Note: SkillSpeedTask will appear in 'Chaoga's mod' tab if OneTimeTaskTab.py")
+    print("        has been modified to include trigger tasks with matching group_name.")
     
     print("\n✓ Installation complete! Restart ok-dna to see the tasks.")
     return 0

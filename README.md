@@ -63,15 +63,28 @@ After downloading, extract the zip file and follow the installation instructions
 
 ### Method 1: Automatic Installation (Recommended)
 
-1. Download the latest release from the GitHub Releases page
-2. Extract the zip file to a temporary location
-3. **Important**: Copy files to your ok-dna **working** folder, not the repo folder:
-   - **Working folder location**: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
-   - **Do NOT copy to the `repo` folder** - ok-dna runs from the `working` folder, not the repo folder
-   - The installation script (`add_autofish_to_config.bat`) automatically uses the working folder
-4. Run `add_autofish_to_config.bat` to automatically install everything:
-   - **Automatically finds** your ok-dna **working** directory (NOT the repo folder)
-   - **Automatically copies** all files from the extracted package:
+1. **Download the ZIP file from GitHub:**
+   - Go to: https://github.com/wawr2k/macrorec/archive/refs/heads/main.zip
+   - **Important**: Download the ZIP file, NOT individual files from the web page
+   - If you copy files from GitHub's web page, they may contain HTML and won't work
+
+2. **Extract the ZIP file anywhere** (e.g., Desktop, Downloads folder):
+   - You can extract it to any temporary location like `C:\Users\[YourUsername]\Downloads\macrorec-main\`
+   - **You do NOT need to copy files manually** - the installation script will handle everything
+   - **Important**: Keep the extracted folder structure intact (don't move individual files)
+
+3. **Run the installation script:**
+   - Navigate to the extracted folder (e.g., `C:\Users\[YourUsername]\Downloads\macrorec-main\macrorec-main\`)
+   - Double-click `add_autofish_to_config.bat` to run it
+   - The script will automatically:
+     - Find your ok-dna **working** folder (usually `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`)
+     - Copy all necessary files to the correct locations
+     - Update your `config.py` file
+
+   - **Automatically finds** your ok-dna **working** directory:
+     - Usually located at: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
+     - **Important**: The script uses the **working** folder, NOT the `repo` folder
+   - **Automatically copies** all files from the extracted package to the working folder:
      - Python files:
        - `AutoFishMultiSpotTask.py` → `[working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
        - `SkillSpeedTask.py` → `[working folder]\src\tasks\trigger\SkillSpeedTask.py`
@@ -79,17 +92,25 @@ After downloading, extract the zip file and follow the installation instructions
        - `mod\fish\` folder → `[working folder]\mod\fish\` (all PNG files)
      - Asset files:
        - `assets\` folder → `[working folder]\assets\` (result.json and images/)
-       - **Important**: If you already have an `assets\` folder, it will be automatically backed up to `assets - original\` before replacement
+       - **Note**: If you already have an `assets\` folder, it will be automatically backed up to `assets - original\` before replacement
    - **Automatically adds** tasks to `config.py` in the **working** folder:
      - Adds `AutoFishMultiSpotTask` to `onetime_tasks` list
      - Adds `SkillSpeedTask` to `trigger_tasks` list
-   - **Important**: The script ONLY works with the **working** folder (`ok-dna\data\apps\ok-dna\working`), NOT the repo folder
-   - The script will automatically find your ok-dna installation and all files in the extracted package
-   - **Note**: Make sure you run the script from the extracted package directory (where the files are located)
-   - Or manually add these lines to `config.py` in the **working** folder (NOT repo folder):
-     - In `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
-     - In `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
-5. Restart ok-dna and the tasks will appear in your task list
+
+5. **Optional - Make SkillSpeedTask appear in "Chaoga's mod" tab:**
+   - By default, `SkillSpeedTask` appears only in the "Triggers" tab
+   - To make it also appear in the "Chaoga's mod" tab, modify `ok/gui/tasks/OneTimeTaskTab.py`:
+     - Add trigger tasks with matching `group_name` to the tab
+     - See the "Advanced Configuration" section below for details
+   - **Note**: This is optional - the task works fine in the Triggers tab
+
+6. **Restart ok-dna** and the tasks will appear in your task list
+
+**Summary:**
+- **Extract ZIP** → Anywhere (Downloads, Desktop, etc.) - doesn't matter where
+- **Run script** → From the extracted folder
+- **Script copies files** → Automatically to your ok-dna working folder
+- **No manual copying needed** → The script handles everything!
 
 ### Method 2: Manual Installation
 
@@ -329,6 +350,30 @@ When installing the `assets/` folder:
 - If issues persist, try disabling Sewers in config and only use other spots
 
 ## Advanced Usage
+
+### Making SkillSpeedTask Appear in "Chaoga's mod" Tab
+
+By default, `SkillSpeedTask` appears only in the "Triggers" tab. To make it also appear in the "Chaoga's mod" tab (alongside `AutoFishMultiSpotTask`), you need to modify `ok/gui/tasks/OneTimeTaskTab.py`:
+
+1. Open `ok/gui/tasks/OneTimeTaskTab.py` in your ok-dna working folder
+2. Find the section where tasks are added to the tab (usually in `__init__` method)
+3. Add code to include trigger tasks with matching `group_name`:
+
+```python
+# Add trigger tasks that share a group_name with onetime tasks
+for task in og.executor.trigger_tasks:
+    if isinstance(task, TriggerTask) and hasattr(task, 'group_name') and task.group_name:
+        if task.group_name in group_names:
+            # Show Enable/Disable for trigger tasks
+            task_card = TaskCard(task, False)
+            self.add_widget(task_card)
+            self.tasks.append(task)  # Add to tasks list for in_current_list check
+```
+
+4. Save the file and restart ok-dna
+5. `SkillSpeedTask` will now appear in both the "Triggers" tab and the "Chaoga's mod" tab
+
+**Note**: This modification is optional. The task works perfectly fine in the Triggers tab only.
 
 ### Manual Config Editing
 
