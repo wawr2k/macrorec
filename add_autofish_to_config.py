@@ -357,42 +357,52 @@ def modify_one_time_task_tab(working_dir):
         print(f"  ✗ ERROR: Failed to read OneTimeTaskTab.py: {e}")
         return False
     
-    # Check if the modification already exists
-    if "Add trigger tasks that share a group_name" in content:
-        print(f"  ✓ OneTimeTaskTab.py already includes trigger task support")
-        return True
-    
     lines = content.split('\n')
     new_lines = []
     inserted = False
     import_updated = False
+    modification_exists = "Add trigger tasks that share a group_name" in content
     
-    # First, update imports if needed
+    # First, ALWAYS check and fix imports (even if modification exists)
+    # Find the first "from ok import" line
+    import_line_index = -1
     for i, line in enumerate(lines):
-        if 'from ok import' in line and not import_updated:
-            # Check if it needs TriggerTask and og
-            needs_trigger = 'TriggerTask' not in line
-            needs_og = 'og' not in line
-            
-            if needs_trigger or needs_og:
-                # Replace the import line - use separate lines for og
-                if 'Logger' in line:
-                    # Keep Logger, add TriggerTask if needed
-                    if needs_trigger and needs_og:
-                        lines[i] = 'from ok import Logger, TriggerTask'
-                        # Insert og import on next line
-                        lines.insert(i + 1, 'from ok import og')
-                    elif needs_trigger:
-                        lines[i] = line.replace('from ok import', 'from ok import TriggerTask,')
-                    elif needs_og:
-                        lines[i] = line
-                        lines.insert(i + 1, 'from ok import og')
-                else:
-                    # No Logger, add all
-                    lines[i] = 'from ok import Logger, TriggerTask'
-                    lines.insert(i + 1, 'from ok import og')
-                import_updated = True
-                break
+        if 'from ok import' in line:
+            import_line_index = i
+            break
+    
+    # Fix imports to ensure og is on a separate line
+    if import_line_index >= 0:
+        current_line = lines[import_line_index]
+        next_line_og = (import_line_index + 1 < len(lines) and 'from ok import og' in lines[import_line_index + 1])
+        
+        # Check if og is in the same line (needs to be separated)
+        if 'og' in current_line and not next_line_og:
+            # Remove og from current line and add it on next line
+            current_line = current_line.replace(', og', '').replace('og,', '').replace(' og', '').replace('og ', '')
+            current_line = current_line.strip()
+            if current_line.endswith(','):
+                current_line = current_line[:-1].strip()
+            lines[import_line_index] = current_line
+            lines.insert(import_line_index + 1, 'from ok import og')
+            import_updated = True
+        elif 'og' not in current_line and not next_line_og:
+            # og is missing, add it
+            lines.insert(import_line_index + 1, 'from ok import og')
+            import_updated = True
+        
+        # Ensure TriggerTask is imported
+        if 'TriggerTask' not in current_line:
+            if 'Logger' in current_line:
+                lines[import_line_index] = current_line.replace('from ok import Logger', 'from ok import Logger, TriggerTask')
+            else:
+                lines[import_line_index] = 'from ok import Logger, TriggerTask'
+            import_updated = True
+    
+    # If modification already exists and imports are correct, we're done
+    if modification_exists and not import_updated:
+        print(f"  ✓ OneTimeTaskTab.py already includes trigger task support with correct imports")
+        return True
     
     # Now find insertion point - after "Add onetime tasks" section
     for i, line in enumerate(lines):
