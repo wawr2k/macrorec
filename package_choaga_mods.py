@@ -88,8 +88,10 @@ def main():
     print(f"Created temp directory: {temp_dir}\n")
     
     try:
-        # 1. Copy AutoFishMultiSpotTask.py
-        print("[1/6] Copying AutoFishMultiSpotTask.py...")
+        # 1. Copy task files
+        print("[1/7] Copying task files...")
+        
+        # Copy AutoFishMultiSpotTask.py
         task_source = working_dir / "src/tasks/fullauto/AutoFishMultiSpotTask.py"
         if task_source.exists():
             task_dest = Path(temp_dir) / "src/tasks/fullauto"
@@ -99,8 +101,18 @@ def main():
         else:
             raise FileNotFoundError(f"ERROR: {task_source} not found!")
         
+        # Copy SkillSpeedTask.py
+        skill_speed_source = working_dir / "src/tasks/trigger/SkillSpeedTask.py"
+        if skill_speed_source.exists():
+            skill_speed_dest = Path(temp_dir) / "src/tasks/trigger"
+            skill_speed_dest.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(skill_speed_source, skill_speed_dest)
+            print("  ✓ Copied SkillSpeedTask.py")
+        else:
+            print("  ⚠ WARNING: SkillSpeedTask.py not found (optional)")
+        
         # 2. Copy mod/fish/ folder with all images
-        print("\n[2/6] Copying mod/fish/ folder...")
+        print("\n[2/7] Copying mod/fish/ folder...")
         mod_fish_source = working_dir / "mod/fish"
         if mod_fish_source.exists():
             mod_fish_dest = Path(temp_dir) / "mod/fish"
@@ -118,7 +130,7 @@ def main():
             raise FileNotFoundError(f"ERROR: {mod_fish_source} not found!")
         
         # 3. Copy assets folder (if it exists)
-        print("\n[3/6] Copying assets folder...")
+        print("\n[3/7] Copying assets folder...")
         assets_source = working_dir / "assets"
         if assets_source.exists():
             assets_dest = Path(temp_dir) / "assets"
@@ -140,7 +152,7 @@ def main():
             print("  ⚠ WARNING: assets folder not found (optional)")
         
         # 4. Copy installation scripts (from backup folder)
-        print("\n[4/6] Copying installation scripts...")
+        print("\n[4/7] Copying installation scripts...")
         script_dir = Path(__file__).parent
         scripts = ["add_autofish_to_config.bat", "add_autofish_to_config.py"]
         for script in scripts:
@@ -152,7 +164,7 @@ def main():
                 print(f"  ⚠ WARNING: {script} not found")
         
         # 5. Copy README/DISTRIBUTE file
-        print("\n[5/6] Copying README...")
+        print("\n[5/7] Copying README...")
         readme_files = ["DISTRIBUTE_AutoFishMultiSpotTask.txt", "README.md"]
         readme_copied = False
         for readme in readme_files:
@@ -166,7 +178,7 @@ def main():
             print("  ⚠ WARNING: No README file found")
         
         # 6. Create installation instructions
-        print("\n[6/6] Creating installation instructions...")
+        print("\n[6/7] Creating installation instructions...")
         install_instructions = """INSTALLATION INSTRUCTIONS
 =========================
 
@@ -177,17 +189,21 @@ def main():
    a) Copy AutoFishMultiSpotTask.py to:
       [your ok-dna folder]\\src\\tasks\\fullauto\\AutoFishMultiSpotTask.py
    
-   b) Copy the mod\\fish\\ folder to:
+   b) Copy SkillSpeedTask.py to:
+      [your ok-dna folder]\\src\\tasks\\trigger\\SkillSpeedTask.py
+   
+   c) Copy the mod\\fish\\ folder to:
       [your ok-dna folder]\\mod\\fish\\
       (Make sure all PNG files are copied)
    
-   c) If assets folder exists, copy it to:
+   d) If assets folder exists, copy it to:
       [your ok-dna folder]\\assets\\
       (This is optional - only if assets were included)
 
-3. Run add_autofish_to_config.bat to automatically add the task to config.py
-   OR manually add this line to config.py's 'onetime_tasks' list:
-   ["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],
+3. Run add_autofish_to_config.bat to automatically add the tasks to config.py
+   OR manually add these lines to config.py:
+   - In 'onetime_tasks' list: ["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],
+   - In 'trigger_tasks' list: ["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],
 
 4. Restart ok-dna and the task will appear in your task list
 

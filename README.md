@@ -13,6 +13,21 @@ An enhanced multi-spot fishing automation task for [ok-dna](https://github.com/B
 - 🔄 **Auto-Return**: Automatically teleports back to Purgatorio and AFKs after all spots are done
 - 🎨 **Optimized for Sewers**: Special handling for Sewers spot to avoid mob attacks
 - 🔇 **Silent Operation**: Sound notifications disabled when switching spots (configurable)
+- 📁 **Chaoga's Mod Tab**: Appears in the "Chaoga's mod" tab alongside other Choaga mods in ok-dna
+
+## Related Tasks
+
+This package includes tasks from the **Chaoga's mod** collection in ok-dna:
+
+### Included in This Package:
+- **Auto Fish Multi Spot** (Stable) - Automatically rotates through multiple fishing spots
+- **Skill Speed** (Stable) - Speed techniques: Rhythm, Shoot Cancel, Rapid Fire, and more
+
+### Other Tasks in Chaoga's Mod Collection:
+- **Auto Fish Chain Task** (Beta) - Runs multi-spot fishing first, then runs expulsion or lv 70 credit
+- **Secret Letter** (Beta) - Selects and clicks commission using OCR
+
+**Note**: Auto Fish Chain Task and Secret Letter are currently in beta and not included in this package. AutoFishMultiSpotTask and SkillSpeedTask are stable and production-ready.
 
 ## Requirements
 
@@ -28,34 +43,45 @@ An enhanced multi-spot fishing automation task for [ok-dna](https://github.com/B
 
 1. Download the latest release from the GitHub Releases page
 2. Extract the zip file to a temporary location
-3. Copy files to your ok-dna installation:
-   - Copy `AutoFishMultiSpotTask.py` to: `[your ok-dna folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
-   - Copy the `mod\fish\` folder to: `[your ok-dna folder]\mod\fish\`
-   - If `assets\` folder is included, copy it to: `[your ok-dna folder]\assets\`
+3. **Important**: Copy files to your ok-dna **working** folder, not the repo folder:
+   - Working folder location: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
+   - Do NOT copy to the `repo` folder - use the `working` folder instead
+4. Copy files to your ok-dna working installation:
+   - Copy `AutoFishMultiSpotTask.py` to: `[ok-dna working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
+   - Copy `SkillSpeedTask.py` to: `[ok-dna working folder]\src\tasks\trigger\SkillSpeedTask.py`
+   - Copy the `mod\fish\` folder to: `[ok-dna working folder]\mod\fish\`
+   - If `assets\` folder is included, copy it to: `[ok-dna working folder]\assets\`
    - **Important**: If you already have an `assets\` folder, it will be backed up to `assets - original\` before replacement
-4. Run `add_autofish_to_config.bat` to automatically add the task to `config.py`
+5. Run `add_autofish_to_config.bat` to automatically add the tasks to `config.py`
    - The script will automatically find your ok-dna installation
-   - Or manually add this line to `config.py`'s `onetime_tasks` list:
-     ```python
-     ["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],
-     ```
-5. Restart ok-dna and the task will appear in your task list
+   - Or manually add these lines to `config.py`:
+     - In `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
+     - In `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
+6. Restart ok-dna and the task will appear in your task list
 
 ### Method 2: Manual Installation
 
 1. Download the source files
-2. Copy `src/tasks/fullauto/AutoFishMultiSpotTask.py` to your ok-dna `src/tasks/fullauto/` folder
-3. Copy all PNG files from `mod/fish/` to your ok-dna `mod/fish/` folder
-4. Edit `src/config.py` and add to the `onetime_tasks` list:
-   ```python
-   ["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],
-   ```
-5. Restart ok-dna
+2. **Important**: Copy files to your ok-dna **working** folder:
+   - Working folder: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
+   - Do NOT use the `repo` folder - use the `working` folder
+3. Copy `src/tasks/fullauto/AutoFishMultiSpotTask.py` to your ok-dna working `src/tasks/fullauto/` folder
+4. Copy `src/tasks/trigger/SkillSpeedTask.py` to your ok-dna working `src/tasks/trigger/` folder
+5. Copy the entire `mod\fish\` folder (not just the PNG files) to your ok-dna working `mod\` folder
+   - This maintains the proper folder structure: `mod\fish\*.png`
+6. If `assets\` folder is included, copy it to your ok-dna working folder
+7. Edit `src/config.py` in the working folder and add:
+   - To `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
+   - To `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
+8. Restart ok-dna
 
 ## Usage
 
 1. Launch ok-dna
-2. Select **"Auto Fish Multi Spot"** from the task list (under "Fully Automatic" group)
+2. Navigate to the **"Chaoga's mod"** tab in the sidebar
+3. Select a task from the list:
+   - **"Auto Fish Multi Spot"** - For automated fishing across multiple spots
+   - **"Skill Speed"** - For combat speed techniques (trigger task, uses hotkeys)
 3. Configure your settings:
    - **Max Rounds Per Spot**: Number of fish to catch per spot (0 = unlimited)
    - **Enable Purgatorio/Icelake/Sewers**: Checkboxes to enable/disable each spot
@@ -109,8 +135,10 @@ An enhanced multi-spot fishing automation task for [ok-dna](https://github.com/B
 AutoFishMultiSpotTask/
 ├── src/
 │   └── tasks/
-│       └── fullauto/
-│           └── AutoFishMultiSpotTask.py    # Main task file
+│       ├── fullauto/
+│       │   └── AutoFishMultiSpotTask.py    # Multi-spot fishing task
+│       └── trigger/
+│           └── SkillSpeedTask.py           # Skill speed techniques task
 ├── mod/
 │   └── fish/
 │       ├── fish.png                        # Fish detection image
@@ -211,6 +239,7 @@ This project is provided as-is for personal use. Please refer to ok-dna's licens
 - Built for [ok-dna](https://github.com/BnanZ0/ok-duet-night-abyss) by BnanZ0
 - Fishing logic integrated from AutoFishTask
 - Image-based navigation for improved reliability
+- **English assets provided by Maverick** - All image recognition assets (inventory buttons, menus, maps, etc.) were captured and optimized for the English client by Maverick
 
 ## Disclaimer
 

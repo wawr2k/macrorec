@@ -15,8 +15,8 @@ AutoFishMultiSpotTask/
 │   └── tasks/
 │       └── fullauto/
 │           └── AutoFishMultiSpotTask.py        # ← Main task file
-├── mod/
-│   └── fish/
+├── mod/                                         # ← Upload the entire mod folder
+│   └── fish/                                    # ← fish is inside mod
 │       ├── fish.png                            # ← All PNG images
 │       ├── nomorefish.png
 │       ├── inventory.png
@@ -41,12 +41,16 @@ AutoFishMultiSpotTask/
 └── add_autofish_to_config.py                   # ← Installation script
 ```
 
+**Important**: Upload the **entire `mod` folder** (which contains `fish`), not just the `fish` folder. This maintains the proper directory structure that users expect.
+
 ### Files to Upload:
 
 #### ✅ **MUST UPLOAD:**
 1. **README.md** - Place in repository root (GitHub will auto-display it)
 2. **src/tasks/fullauto/AutoFishMultiSpotTask.py** - The main task file
-3. **mod/fish/** - All PNG image files (20 files total)
+3. **mod/** - Upload the entire `mod` folder (which contains `fish` folder with all PNG images)
+   - This maintains the structure: `mod/fish/*.png`
+   - Do NOT upload just the `fish` folder - upload the `mod` folder
 4. **assets/** - The entire assets folder (result.json + images folder)
 5. **add_autofish_to_config.bat** - Installation helper
 6. **add_autofish_to_config.py** - Installation helper
@@ -69,7 +73,8 @@ AutoFishMultiSpotTask/
    - Click "uploading an existing file"
    - Create the folder structure:
      - Create `src/tasks/fullauto/` folder, then upload `AutoFishMultiSpotTask.py`
-     - Create `mod/fish/` folder, then upload all PNG files
+     - Create `mod/` folder, then create `fish/` inside it, then upload all PNG files to `mod/fish/`
+     - **OR** upload the entire `mod` folder from your working directory (which already has `fish` inside)
      - Create `assets/` folder, then upload `result.json` and `images/` subfolder
    - Upload `README.md` to the root
    - Upload `add_autofish_to_config.bat` and `.py` to the root
@@ -83,7 +88,7 @@ AutoFishMultiSpotTask/
 git init
 git add README.md
 git add src/tasks/fullauto/AutoFishMultiSpotTask.py
-git add mod/fish/*.png
+git add mod/                    # Add entire mod folder (includes fish subfolder)
 git add assets/
 git add add_autofish_to_config.bat
 git add add_autofish_to_config.py
@@ -107,8 +112,10 @@ To find the files to upload:
 - **AutoFishMultiSpotTask.py**: 
   `C:\Users\PTA\AppData\Local\ok-dna\data\apps\ok-dna\working\src\tasks\fullauto\AutoFishMultiSpotTask.py`
 
-- **mod/fish/ images**: 
-  `C:\Users\PTA\AppData\Local\ok-dna\data\apps\ok-dna\working\mod\fish\*.png`
+- **mod/fish/ folder**: 
+  `C:\Users\PTA\AppData\Local\ok-dna\data\apps\ok-dna\working\mod\fish\`
+  - **Upload the entire `mod` folder** (which contains `fish`), not just the `fish` folder
+  - This maintains the proper structure: `mod/fish/*.png`
 
 - **assets/ folder**: 
   `C:\Users\PTA\AppData\Local\ok-dna\data\apps\ok-dna\working\assets\`
@@ -118,6 +125,8 @@ To find the files to upload:
 
 - **Installation scripts**: 
   `C:\Users\PTA\AppData\Local\ok-dna\data\apps\ok-dna\working\mod\backup\Choaga\add_autofish_to_config.*`
+
+**Note**: Use files from the `working` folder, NOT the `repo` folder. The `working` folder is where ok-dna actually runs from.
 
 ## Important Notes
 
@@ -131,11 +140,12 @@ To find the files to upload:
 
 - [ ] README.md in repository root
 - [ ] AutoFishMultiSpotTask.py in src/tasks/fullauto/
-- [ ] All PNG files in mod/fish/
+- [ ] Entire `mod/` folder uploaded (which contains `fish/` subfolder with all PNG files)
 - [ ] assets/ folder with result.json and images/
 - [ ] add_autofish_to_config.bat and .py in root
 - [ ] Repository structure matches the guide above
 - [ ] Test that README.md displays correctly on GitHub
+- [ ] Files copied from `working` folder, NOT `repo` folder
 
 ## After Upload
 
