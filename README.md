@@ -154,12 +154,12 @@ After downloading, extract the zip file and follow the installation instructions
    - **Use case**: Rapid fire attacks
    - **Config options**:
      - Hotkey (default: F6)
-     - Interval between Ctrl presses (default: 0.1 seconds)
-     - Duration to hold right click (default: 1.0 seconds)
+     - Interval between Ctrl presses (default: 0.02 seconds)
+     - Duration to hold right click (default: 0.02 seconds)
 
 2. **Rhythm Technique** (Default: F7)
    - **What it does**: Executes E (skill) → Hold Left Click (charge) → Right Click (shoot)
-   - **Use case**: Rhythm combo for optimal damage
+   - **Use case**: Rhythm combo for optimal speed
    - **Config options**:
      - Hotkey (default: F7)
      - Skill delay (default: 0.05 seconds)
@@ -219,8 +219,8 @@ After downloading, extract the zip file and follow the installation instructions
 |--------|-------------|---------|
 | Enable Rapid Fire Cancel | Enable/disable rapid fire technique | True |
 | Rapid Fire Cancel Hotkey | Hotkey to activate rapid fire | F6 |
-| Rapid Fire Cancel Interval | Interval between Ctrl presses (seconds) | 0.1 |
-| Rapid Fire Cancel Duration | How long to hold right click (seconds) | 1.0 |
+| Rapid Fire Cancel Interval | Interval between Ctrl presses (seconds) | 0.02 |
+| Rapid Fire Cancel Duration | How long to hold right click (seconds) | 0.02 |
 | Enable Rhythm | Enable/disable Rhythm technique | True |
 | Rhythm Hotkey | Hotkey to activate Rhythm | F7 |
 | Rhythm Skill Delay | Delay after skill before charge (seconds) | 0.05 |
@@ -329,14 +329,6 @@ When installing the `assets/` folder:
 - If issues persist, try disabling Sewers in config and only use other spots
 
 ## Advanced Usage
-
-### Creating Distribution Packages
-
-If you want to package this mod for distribution:
-
-1. Navigate to `mod/backup/Choaga/` folder in your ok-dna installation
-2. Run `package_choaga_mods.bat` or `package_choaga_mods.py`
-3. This will create `Choaga_Mods_Package.zip` in the working directory with all necessary files
 
 ### Manual Config Editing
 
