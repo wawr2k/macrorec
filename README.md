@@ -353,7 +353,19 @@ When installing the `assets/` folder:
 
 ### Making SkillSpeedTask Appear in "Chaoga's mod" Tab
 
-By default, `SkillSpeedTask` appears only in the "Triggers" tab. To make it also appear in the "Chaoga's mod" tab (alongside `AutoFishMultiSpotTask`), you need to modify `ok/gui/tasks/OneTimeTaskTab.py`:
+By default, `SkillSpeedTask` appears only in the "Triggers" tab. The installation script automatically modifies `ok/gui/tasks/OneTimeTaskTab.py` to make it also appear in the "Chaoga's mod" tab.
+
+**Note**: If `SkillSpeedTask` doesn't appear in the "Chaoga's mod" tab after installation:
+
+1. **Check if the modification was applied**: Open `ok/gui/tasks/OneTimeTaskTab.py` and verify it contains code that adds trigger tasks with matching `group_name`
+2. **Verify you have the modification**: The file should contain lines like:
+   ```python
+   # Add trigger tasks that share a group_name with filtered onetime tasks
+   for task in og.executor.trigger_tasks:
+       if isinstance(task, TriggerTask) and hasattr(task, 'group_name') and task.group_name:
+           if task.group_name in filtered_group_names:
+   ```
+3. **If the modification is missing**: Manually add it to `ok/gui/tasks/OneTimeTaskTab.py`:
 
 1. Open `ok/gui/tasks/OneTimeTaskTab.py` in your ok-dna working folder
 2. Find the section where tasks are added to the tab (usually in `__init__` method)
@@ -373,7 +385,11 @@ for task in og.executor.trigger_tasks:
 4. Save the file and restart ok-dna
 5. `SkillSpeedTask` will now appear in both the "Triggers" tab and the "Chaoga's mod" tab
 
-**Note**: This modification is optional. The task works perfectly fine in the Triggers tab only.
+**Important Notes**:
+- The installation script automatically applies this modification
+- If you have multiple tasks with "Chaoga's mod" group_name (like AutoFishChainTask, SecretLetterTask), ok-dna creates a separate "Chaoga's mod" tab automatically
+- If you only have `AutoFishMultiSpotTask` with "Chaoga's mod", it may appear in a mixed tab, but `SkillSpeedTask` should still appear alongside it if the modification is applied correctly
+- This modification is optional - the task works perfectly fine in the Triggers tab only
 
 ### Manual Config Editing
 
