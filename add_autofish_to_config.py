@@ -148,7 +148,11 @@ def copy_python_files(working_dir, script_dir):
     autofish_dest = os.path.join(working_dir, "src", "tasks", "fullauto", "AutoFishMultiSpotTask.py")
     autofish_dest_abs = os.path.abspath(autofish_dest)
     
-    if autofish_source and autofish_source != autofish_dest_abs:
+    # Check if file already exists in working directory (from previous installation)
+    if os.path.exists(autofish_dest):
+        print(f"  ✓ AutoFishMultiSpotTask.py already exists in {os.path.dirname(autofish_dest)}")
+        print(f"     (Skipping copy - using existing file)")
+    elif autofish_source and autofish_source != autofish_dest_abs:
         dest_dir = os.path.dirname(autofish_dest)
         os.makedirs(dest_dir, exist_ok=True)
         try:
@@ -157,13 +161,15 @@ def copy_python_files(working_dir, script_dir):
         except Exception as e:
             errors.append(f"Failed to copy AutoFishMultiSpotTask.py: {e}")
             print(f"  ✗ ERROR: Failed to copy AutoFishMultiSpotTask.py: {e}")
-    elif os.path.exists(autofish_dest):
-        print(f"  ✓ AutoFishMultiSpotTask.py already exists in {os.path.dirname(autofish_dest)}")
     else:
         errors.append("AutoFishMultiSpotTask.py not found in package")
         print(f"  ✗ ERROR: AutoFishMultiSpotTask.py not found in extracted package")
+        print(f"     Searched locations:")
+        print(f"       - {os.path.join(script_dir, 'src', 'tasks', 'fullauto', 'AutoFishMultiSpotTask.py')}")
+        print(f"       - {os.path.join(os.path.dirname(script_dir), 'src', 'tasks', 'fullauto', 'AutoFishMultiSpotTask.py')}")
         print(f"     Make sure you extracted the zip file and run the script from the extracted folder.")
         print(f"     Expected location: [extracted folder]/src/tasks/fullauto/AutoFishMultiSpotTask.py")
+        print(f"     If the file is missing from the package, you may need to download it separately.")
     
     # SkillSpeedTask.py
     print("  Looking for SkillSpeedTask.py...")
@@ -188,9 +194,42 @@ def copy_python_files(working_dir, script_dir):
         print(f"     Make sure you extracted the zip file and run the script from the extracted folder.")
         print(f"     Expected location: [extracted folder]/src/tasks/trigger/SkillSpeedTask.py")
     
+    # Final check: verify both files exist in working directory (either copied or already there)
+    autofish_exists = os.path.exists(autofish_dest)
+    skillspeed_exists = os.path.exists(skillspeed_dest)
+    
     if errors:
-        print(f"\n  ⚠ WARNING: Some files could not be copied. Please check the errors above.")
+        print(f"\n  ⚠ WARNING: Some files could not be copied from package. Checking working directory...")
+        
+        if autofish_exists and skillspeed_exists:
+            print(f"  ✓ Both files already exist in working directory. Installation can continue.")
+            return True
+        elif autofish_exists:
+            print(f"  ⚠ AutoFishMultiSpotTask.py exists, but SkillSpeedTask.py is missing.")
+            print(f"     Please ensure SkillSpeedTask.py is in the package or working directory.")
+            return False
+        elif skillspeed_exists:
+            print(f"  ⚠ SkillSpeedTask.py exists, but AutoFishMultiSpotTask.py is missing.")
+            print(f"     Please ensure AutoFishMultiSpotTask.py is in the package or working directory.")
+            return False
+        else:
+            print(f"  ✗ ERROR: Required files are missing. Installation cannot continue.")
+            print(f"     Missing files:")
+            if not autofish_exists:
+                print(f"       - {autofish_dest}")
+            if not skillspeed_exists:
+                print(f"       - {skillspeed_dest}")
+            return False
+    
+    # Verify both files exist after copying
+    if not autofish_exists or not skillspeed_exists:
+        print(f"\n  ✗ ERROR: Files were not copied successfully.")
+        if not autofish_exists:
+            print(f"     Missing: {autofish_dest}")
+        if not skillspeed_exists:
+            print(f"     Missing: {skillspeed_dest}")
         return False
+    
     return True
 
 def copy_mod_fish_folder(working_dir, script_dir):
