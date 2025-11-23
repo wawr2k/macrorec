@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Script to install Choaga's mod tasks:
 - Copies Python files to correct folders
@@ -12,6 +13,37 @@ import os
 import sys
 import shutil
 from pathlib import Path
+
+# Check if this file has been corrupted with HTML (from GitHub web view)
+def check_file_corruption():
+    """Check if the script file itself has been corrupted with HTML"""
+    script_path = os.path.abspath(__file__)
+    try:
+        with open(script_path, 'r', encoding='utf-8') as f:
+            first_lines = ''.join([f.readline() for _ in range(5)])
+            if '<title>' in first_lines or '<html' in first_lines.lower() or '·' in first_lines:
+                print("=" * 70)
+                print("ERROR: This Python file appears to be corrupted with HTML content!")
+                print("=" * 70)
+                print("\nThis usually happens when:")
+                print("  1. You copied the file content from GitHub's web page")
+                print("  2. You downloaded the file incorrectly")
+                print("\nSOLUTION:")
+                print("  1. Download the ZIP file from GitHub:")
+                print("     https://github.com/wawr2k/macrorec/archive/refs/heads/main.zip")
+                print("  2. Extract the ZIP file")
+                print("  3. Run add_autofish_to_config.bat from the extracted folder")
+                print("\nOR download the RAW file directly:")
+                print("  https://raw.githubusercontent.com/wawr2k/macrorec/main/add_autofish_to_config.py")
+                print("  (Right-click the link above and 'Save As...')")
+                print("=" * 70)
+                return True
+    except Exception:
+        pass
+    return False
+
+if check_file_corruption():
+    sys.exit(1)
 
 CONFIG_FILE = "src/config.py"
 ONETIME_TASK_ENTRY = '        ["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],'
