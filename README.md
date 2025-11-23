@@ -1,6 +1,10 @@
-# AutoFishMultiSpotTask - ok-dna Fishing Automation
+# Choaga's Mod Collection - AutoFishMultiSpotTask & SkillSpeedTask
 
-An enhanced multi-spot fishing automation task for [ok-dna](https://github.com/BnanZ0/ok-duet-night-abyss), the automation framework for Duet Night Abyss. This task automatically rotates through multiple fishing spots (Purgatorio, Icelake, and Sewers) with intelligent navigation, real-time statistics tracking, and optimized fishing logic.
+A collection of automation tasks for [ok-dna](https://github.com/BnanZ0/ok-duet-night-abyss), the automation framework for Duet Night Abyss. This package includes:
+
+- **AutoFishMultiSpotTask**: An enhanced multi-spot fishing automation task that automatically rotates through multiple fishing spots (Purgatorio, Icelake, and Sewers) with intelligent navigation, real-time statistics tracking, and optimized fishing logic.
+
+- **SkillSpeedTask**: A trigger task providing hotkey-activated combat speed techniques including Rhythm, Quick Skill Cancel, Rapid Fire, Skill Charge Combo, and character switching.
 
 ## Features
 
