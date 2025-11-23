@@ -341,6 +341,107 @@ def copy_assets_folder(working_dir, script_dir):
         print(f"  ⚠ WARNING: assets/ folder not found (optional)")
         print(f"     If assets were included in the package, manually copy assets/ folder to [working folder]/assets/")
 
+def modify_one_time_task_tab(working_dir):
+    """Modify OneTimeTaskTab.py to include trigger tasks with matching group_name"""
+    onetime_tab_path = os.path.join(working_dir, "ok", "gui", "tasks", "OneTimeTaskTab.py")
+    
+    if not os.path.exists(onetime_tab_path):
+        print(f"  ⚠ WARNING: OneTimeTaskTab.py not found at {onetime_tab_path}")
+        print(f"     SkillSpeedTask may not appear in 'Chaoga's mod' tab.")
+        return False
+    
+    try:
+        with open(onetime_tab_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception as e:
+        print(f"  ✗ ERROR: Failed to read OneTimeTaskTab.py: {e}")
+        return False
+    
+    # Check if the modification already exists
+    if "Add trigger tasks that share a group_name" in content:
+        print(f"  ✓ OneTimeTaskTab.py already includes trigger task support")
+        return True
+    
+    lines = content.split('\n')
+    new_lines = []
+    inserted = False
+    import_updated = False
+    
+    # First, update imports if needed
+    for i, line in enumerate(lines):
+        if 'from ok import' in line and not import_updated:
+            # Check if it needs TriggerTask and og
+            if 'TriggerTask' not in line or 'og' not in line:
+                # Parse existing imports
+                if 'Logger' in line:
+                    imports = ['Logger']
+                    if 'TriggerTask' not in line:
+                        imports.append('TriggerTask')
+                    if 'og' not in line:
+                        imports.append('og')
+                    lines[i] = f"from ok import {', '.join(imports)}"
+                else:
+                    # No Logger, add all
+                    lines[i] = 'from ok import Logger, TriggerTask, og'
+                import_updated = True
+    
+    # Now find insertion point - after "Add onetime tasks" section
+    for i, line in enumerate(lines):
+        new_lines.append(line)
+        
+        # Look for the end of "Add onetime tasks" section
+        # Pattern: after "self.add_widget(task_card)" and before next major section
+        if 'self.add_widget(task_card)' in line and not inserted:
+            # Check if this is the end of the onetime tasks loop
+            # Look ahead to see if next non-empty line is a comment or different section
+            j = i + 1
+            while j < len(lines) and (lines[j].strip() == '' or lines[j].strip().startswith('#')):
+                j += 1
+            
+            # If next line is "self.keep_info_when_done" or another section, insert here
+            if j < len(lines) and ('self.keep_info_when_done' in lines[j] or 'def ' in lines[j]):
+                new_lines.append('')
+                new_lines.append('        # Add trigger tasks that share a group_name with onetime tasks')
+                new_lines.append('        for task in og.executor.trigger_tasks:')
+                new_lines.append('            if isinstance(task, TriggerTask) and hasattr(task, \'group_name\') and task.group_name:')
+                new_lines.append('                if task.group_name in group_names:')
+                new_lines.append('                    # Show Enable/Disable for trigger tasks')
+                new_lines.append('                    task_card = TaskCard(task, False)')
+                new_lines.append('                    self.add_widget(task_card)')
+                new_lines.append('                    self.tasks.append(task)  # Add to tasks list for in_current_list check')
+                inserted = True
+    
+    if not inserted:
+        # Fallback: insert before "self.keep_info_when_done"
+        for i, line in enumerate(new_lines):
+            if 'self.keep_info_when_done' in line and not inserted:
+                new_lines.insert(i, '                    self.tasks.append(task)  # Add to tasks list for in_current_list check')
+                new_lines.insert(i, '                    self.add_widget(task_card)')
+                new_lines.insert(i, '                    task_card = TaskCard(task, False)')
+                new_lines.insert(i, '                    # Show Enable/Disable for trigger tasks')
+                new_lines.insert(i, '                if task.group_name in group_names:')
+                new_lines.insert(i, '            if isinstance(task, TriggerTask) and hasattr(task, \'group_name\') and task.group_name:')
+                new_lines.insert(i, '        for task in og.executor.trigger_tasks:')
+                new_lines.insert(i, '        # Add trigger tasks that share a group_name with onetime tasks')
+                new_lines.insert(i, '')
+                inserted = True
+    
+    if not inserted:
+        print(f"  ✗ ERROR: Could not find insertion point in OneTimeTaskTab.py")
+        print(f"     Please manually add the trigger task code to OneTimeTaskTab.py")
+        return False
+    
+    # Write back
+    try:
+        new_content = '\n'.join(new_lines)
+        with open(onetime_tab_path, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        print(f"  ✓ Successfully modified OneTimeTaskTab.py to include trigger tasks")
+        return True
+    except Exception as e:
+        print(f"  ✗ ERROR: Failed to write OneTimeTaskTab.py: {e}")
+        return False
+
 def add_task_to_config(working_dir, task_entry, list_name, task_name):
     """Add a task entry to config.py"""
     config_path = os.path.join(working_dir, CONFIG_FILE)
@@ -482,8 +583,9 @@ def main():
     print("\n[5/5] Adding SkillSpeedTask to config.py...")
     add_task_to_config(working_dir, TRIGGER_TASK_ENTRY, "trigger_tasks", "SkillSpeedTask")
     
-    print("\n  Note: SkillSpeedTask will appear in 'Chaoga's mod' tab if OneTimeTaskTab.py")
-    print("        has been modified to include trigger tasks with matching group_name.")
+    # Step 6: Modify OneTimeTaskTab.py to include trigger tasks with matching group_name
+    print("\n[6/6] Modifying OneTimeTaskTab.py to include trigger tasks in grouped tabs...")
+    modify_one_time_task_tab(working_dir)
     
     print("\n✓ Installation complete! Restart ok-dna to see the tasks.")
     return 0
