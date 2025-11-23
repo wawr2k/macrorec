@@ -6,6 +6,8 @@ A collection of automation tasks for [ok-dna](https://github.com/BnanZ0/ok-duet-
 
 - **SkillSpeedTask**: A trigger task providing hotkey-activated combat speed techniques including Rhythm, Quick Skill Cancel, Rapid Fire, Skill Charge Combo, and character switching.
 
+- **Advanced Skill Options**: A utility script to add advanced skill casting features (multiple casts, click spam, configurable frequencies) to all fullauto tasks. See [Advanced Usage](#adding-advanced-skill-options-to-fullauto-tasks) for details.
+
 ## Features
 
 - 🎣 **Multi-Spot Fishing**: Automatically rotates through Purgatorio, Icelake, and Sewers fishing spots
@@ -18,6 +20,7 @@ A collection of automation tasks for [ok-dna](https://github.com/BnanZ0/ok-duet-
 - 🎨 **Optimized for Sewers**: Special handling for Sewers spot to avoid mob attacks
 - 🔇 **Silent Operation**: Sound notifications disabled when switching spots (configurable)
 - 📁 **Chaoga's Mod Tab**: Appears in the "Chaoga's mod" tab alongside other Choaga mods in ok-dna
+- ⚔️ **Advanced Skill Options**: Optional utility to add advanced skill casting features (multiple casts, click spam, dual skills) to all fullauto tasks - [Learn more](#adding-advanced-skill-options-to-fullauto-tasks)
 
 ## Related Tasks
 
