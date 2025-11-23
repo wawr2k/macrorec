@@ -51,76 +51,115 @@ def find_okdna_working_dir():
     
     return None
 
+def find_file_in_package(script_dir, relative_path, show_debug=False):
+    """Find a file in the extracted package, checking multiple possible locations"""
+    # Normalize the relative path
+    path_parts = relative_path.replace('\\', '/').split('/')
+    
+    # Try multiple search strategies
+    search_paths = [
+        # Strategy 1: Same directory as script (extracted package root)
+        os.path.join(script_dir, *path_parts),
+        # Strategy 2: Parent of script directory (if script is in a subfolder)
+        os.path.join(os.path.dirname(script_dir), *path_parts),
+        # Strategy 3: Two levels up (if script is in backup/Choaga/)
+        os.path.join(os.path.dirname(os.path.dirname(script_dir)), *path_parts),
+        # Strategy 4: Three levels up (if script is in mod/backup/Choaga/)
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(script_dir))), *path_parts),
+    ]
+    
+    # Also try searching from script_dir up to 5 levels
+    current = script_dir
+    for _ in range(5):
+        search_paths.append(os.path.join(current, *path_parts))
+        parent = os.path.dirname(current)
+        if parent == current:  # Reached root
+            break
+        current = parent
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_paths = []
+    for path in search_paths:
+        abs_path = os.path.abspath(path)
+        if abs_path not in seen:
+            seen.add(abs_path)
+            unique_paths.append(abs_path)
+    
+    if show_debug:
+        print(f"    Searching for: {relative_path}")
+        print(f"    Tried {len(unique_paths)} locations...")
+    
+    for search_path in unique_paths:
+        if os.path.exists(search_path) and os.path.isfile(search_path):
+            if show_debug:
+                print(f"    ✓ Found at: {search_path}")
+            return search_path
+    
+    if show_debug:
+        print(f"    ✗ Not found. First few search locations:")
+        for i, path in enumerate(unique_paths[:3]):
+            print(f"      {i+1}. {path}")
+    
+    return None
+
 def copy_python_files(working_dir, script_dir):
     """Copy Python task files to correct folders"""
     print("\n[1/5] Copying Python task files...")
+    print(f"  Searching for files from: {script_dir}")
     
-    # Find source files - check multiple possible locations
-    # 1. Check if files are in extracted package (same directory structure as script)
-    # 2. Check if files are already in working directory (skip copy if same)
-    # 3. Check parent directories of script
+    errors = []
     
-    # AutoFishMultiSpotTask.py sources
-    autofish_sources = [
-        # Extracted package structure
-        os.path.join(script_dir, "src", "tasks", "fullauto", "AutoFishMultiSpotTask.py"),
-        # Parent directory (if script is in backup folder)
-        os.path.join(os.path.dirname(script_dir), "..", "..", "..", "src", "tasks", "fullauto", "AutoFishMultiSpotTask.py"),
-        # Working directory (already installed)
-        os.path.join(working_dir, "src", "tasks", "fullauto", "AutoFishMultiSpotTask.py"),
-    ]
-    
-    autofish_source = None
-    for source in autofish_sources:
-        abs_source = os.path.abspath(source)
-        if os.path.exists(abs_source):
-            autofish_source = abs_source
-            break
-    
+    # AutoFishMultiSpotTask.py
+    print("  Looking for AutoFishMultiSpotTask.py...")
+    autofish_source = find_file_in_package(script_dir, "src/tasks/fullauto/AutoFishMultiSpotTask.py", show_debug=True)
     autofish_dest = os.path.join(working_dir, "src", "tasks", "fullauto", "AutoFishMultiSpotTask.py")
     autofish_dest_abs = os.path.abspath(autofish_dest)
     
     if autofish_source and autofish_source != autofish_dest_abs:
         dest_dir = os.path.dirname(autofish_dest)
         os.makedirs(dest_dir, exist_ok=True)
-        shutil.copy2(autofish_source, autofish_dest)
-        print(f"  ✓ Copied AutoFishMultiSpotTask.py to {dest_dir}")
+        try:
+            shutil.copy2(autofish_source, autofish_dest)
+            print(f"  ✓ Copied AutoFishMultiSpotTask.py to {dest_dir}")
+        except Exception as e:
+            errors.append(f"Failed to copy AutoFishMultiSpotTask.py: {e}")
+            print(f"  ✗ ERROR: Failed to copy AutoFishMultiSpotTask.py: {e}")
     elif os.path.exists(autofish_dest):
         print(f"  ✓ AutoFishMultiSpotTask.py already exists in {os.path.dirname(autofish_dest)}")
     else:
-        print(f"  ⚠ WARNING: AutoFishMultiSpotTask.py not found")
-        print(f"     Please manually copy AutoFishMultiSpotTask.py to src/tasks/fullauto/")
+        errors.append("AutoFishMultiSpotTask.py not found in package")
+        print(f"  ✗ ERROR: AutoFishMultiSpotTask.py not found in extracted package")
+        print(f"     Make sure you extracted the zip file and run the script from the extracted folder.")
+        print(f"     Expected location: [extracted folder]/src/tasks/fullauto/AutoFishMultiSpotTask.py")
     
-    # SkillSpeedTask.py sources
-    skillspeed_sources = [
-        # Extracted package structure
-        os.path.join(script_dir, "src", "tasks", "trigger", "SkillSpeedTask.py"),
-        # Parent directory (if script is in backup folder)
-        os.path.join(os.path.dirname(script_dir), "..", "..", "..", "src", "tasks", "trigger", "SkillSpeedTask.py"),
-        # Working directory (already installed)
-        os.path.join(working_dir, "src", "tasks", "trigger", "SkillSpeedTask.py"),
-    ]
-    
-    skillspeed_source = None
-    for source in skillspeed_sources:
-        abs_source = os.path.abspath(source)
-        if os.path.exists(abs_source):
-            skillspeed_source = abs_source
-            break
-    
+    # SkillSpeedTask.py
+    print("  Looking for SkillSpeedTask.py...")
+    skillspeed_source = find_file_in_package(script_dir, "src/tasks/trigger/SkillSpeedTask.py", show_debug=True)
     skillspeed_dest = os.path.join(working_dir, "src", "tasks", "trigger", "SkillSpeedTask.py")
     skillspeed_dest_abs = os.path.abspath(skillspeed_dest)
     
     if skillspeed_source and skillspeed_source != skillspeed_dest_abs:
         dest_dir = os.path.dirname(skillspeed_dest)
         os.makedirs(dest_dir, exist_ok=True)
-        shutil.copy2(skillspeed_source, skillspeed_dest)
-        print(f"  ✓ Copied SkillSpeedTask.py to {dest_dir}")
+        try:
+            shutil.copy2(skillspeed_source, skillspeed_dest)
+            print(f"  ✓ Copied SkillSpeedTask.py to {dest_dir}")
+        except Exception as e:
+            errors.append(f"Failed to copy SkillSpeedTask.py: {e}")
+            print(f"  ✗ ERROR: Failed to copy SkillSpeedTask.py: {e}")
     elif os.path.exists(skillspeed_dest):
         print(f"  ✓ SkillSpeedTask.py already exists in {os.path.dirname(skillspeed_dest)}")
     else:
-        print(f"  ⚠ WARNING: SkillSpeedTask.py not found")
-        print(f"     Please manually copy SkillSpeedTask.py to src/tasks/trigger/")
+        errors.append("SkillSpeedTask.py not found in package")
+        print(f"  ✗ ERROR: SkillSpeedTask.py not found in extracted package")
+        print(f"     Make sure you extracted the zip file and run the script from the extracted folder.")
+        print(f"     Expected location: [extracted folder]/src/tasks/trigger/SkillSpeedTask.py")
+    
+    if errors:
+        print(f"\n  ⚠ WARNING: Some files could not be copied. Please check the errors above.")
+        return False
+    return True
 
 def copy_mod_fish_folder(working_dir, script_dir):
     """Copy mod/fish/ folder with all PNG images"""
@@ -321,9 +360,19 @@ def main():
     
     config_path = os.path.join(working_dir, CONFIG_FILE)
     print(f"Found ok-dna at: {working_dir}")
+    print(f"Script location: {script_dir}")
     
-    # Step 1: Copy Python files
-    copy_python_files(working_dir, script_dir)
+    # Step 1: Copy Python files (critical - must succeed)
+    if not copy_python_files(working_dir, script_dir):
+        print("\n✗ ERROR: Failed to copy Python files. Installation aborted.")
+        print("  Please ensure you run this script from the extracted package directory.")
+        print("  The package should have this structure:")
+        print("    package/")
+        print("      src/tasks/fullauto/AutoFishMultiSpotTask.py")
+        print("      src/tasks/trigger/SkillSpeedTask.py")
+        print("      add_autofish_to_config.bat")
+        print("      add_autofish_to_config.py")
+        return 1
     
     # Step 2: Copy mod/fish/ folder
     copy_mod_fish_folder(working_dir, script_dir)
