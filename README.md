@@ -351,6 +351,52 @@ When installing the `assets/` folder:
 
 ## Advanced Usage
 
+### Adding Advanced Skill Options to Fullauto Tasks
+
+The `ImportTask.py` includes advanced skill options that allow:
+- Multiple skill casts per cycle
+- Click spam (left/right click) after casting skills
+- Configurable skill release frequency
+- Support for Skill 1 and Skill 2
+
+To add these same options to all other fullauto tasks (except fishing tasks), use the provided script:
+
+1. **Run the script:**
+   - Navigate to `mod/backup/Choaga/` folder
+   - Double-click `add_skill_options_to_tasks.bat`
+   - Or run: `py add_skill_options_to_tasks.py`
+
+2. **Review the changes:**
+   - The script will show which task files will be modified
+   - Confirm with 'y' to proceed
+   - Backups are automatically created (`.backup` extension)
+
+3. **What gets added:**
+   - **Config options** in task settings:
+     - `Use Skill 1`: Combat Skill / Ultimate Skill / Geniemon Support
+     - `Skill 1 Cast Count`: How many times to cast before waiting
+     - `Skill 1 Click Spam Type`: None / Left Click / Right Click
+     - `Skill 1 Click Spam Duration`: Duration in seconds to spam clicks
+     - `Skill 1 Release Frequency`: Seconds between skill cycles
+     - `Use Skill 2`: Second skill option (frequency only)
+     - `Skill 2 Release Frequency`: Seconds between Skill 2 releases
+   - **Methods**: `use_skill()` and `use_skill_2()` with advanced logic
+   - **Initialization**: Skill-related variables in `init_param()`
+
+4. **Tasks modified:**
+   - All tasks in `src/tasks/fullauto/` except:
+     - `AutoFishTask.py` (fishing task)
+     - `AutoFishMultiSpotTask.py` (fishing task)
+     - `AutoFishChainTask.py` (fishing task)
+     - `ImportTask.py` (already has these options)
+
+5. **After running:**
+   - Test each modified task to ensure it works correctly
+   - If something breaks, restore from `.backup` files
+   - Delete `.backup` files once satisfied
+
+**Note**: This modification is optional. Tasks will work fine without it, but won't have the advanced skill options.
+
 ### Making SkillSpeedTask Appear in "Chaoga's mod" Tab
 
 By default, `SkillSpeedTask` appears only in the "Triggers" tab. The installation script automatically modifies `ok/gui/tasks/OneTimeTaskTab.py` to make it also appear in the "Chaoga's mod" tab.
