@@ -371,19 +371,28 @@ def modify_one_time_task_tab(working_dir):
     for i, line in enumerate(lines):
         if 'from ok import' in line and not import_updated:
             # Check if it needs TriggerTask and og
-            if 'TriggerTask' not in line or 'og' not in line:
-                # Parse existing imports
+            needs_trigger = 'TriggerTask' not in line
+            needs_og = 'og' not in line
+            
+            if needs_trigger or needs_og:
+                # Replace the import line - use separate lines for og
                 if 'Logger' in line:
-                    imports = ['Logger']
-                    if 'TriggerTask' not in line:
-                        imports.append('TriggerTask')
-                    if 'og' not in line:
-                        imports.append('og')
-                    lines[i] = f"from ok import {', '.join(imports)}"
+                    # Keep Logger, add TriggerTask if needed
+                    if needs_trigger and needs_og:
+                        lines[i] = 'from ok import Logger, TriggerTask'
+                        # Insert og import on next line
+                        lines.insert(i + 1, 'from ok import og')
+                    elif needs_trigger:
+                        lines[i] = line.replace('from ok import', 'from ok import TriggerTask,')
+                    elif needs_og:
+                        lines[i] = line
+                        lines.insert(i + 1, 'from ok import og')
                 else:
                     # No Logger, add all
-                    lines[i] = 'from ok import Logger, TriggerTask, og'
+                    lines[i] = 'from ok import Logger, TriggerTask'
+                    lines.insert(i + 1, 'from ok import og')
                 import_updated = True
+                break
     
     # Now find insertion point - after "Add onetime tasks" section
     for i, line in enumerate(lines):
