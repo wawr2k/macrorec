@@ -69,28 +69,31 @@ After downloading, extract the zip file and follow the installation instructions
    - **Working folder location**: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
    - **Do NOT copy to the `repo` folder** - ok-dna runs from the `working` folder, not the repo folder
    - The installation script (`add_autofish_to_config.bat`) automatically uses the working folder
-4. Copy image and asset files to your ok-dna working installation:
-   - Copy the `mod\fish\` folder to: `[ok-dna working folder]\mod\fish\`
-   - If `assets\` folder is included, copy it to: `[ok-dna working folder]\assets\`
-   - **Important**: If you already have an `assets\` folder, it will be backed up to `assets - original\` before replacement
-   - **Note**: Python files (AutoFishMultiSpotTask.py and SkillSpeedTask.py) are handled automatically by the installation script in Step 5
-5. Run `add_autofish_to_config.bat` to automatically install the Python files and update config:
+4. Run `add_autofish_to_config.bat` to automatically install everything:
    - **Automatically finds** your ok-dna **working** directory (NOT the repo folder)
-   - **Automatically copies** Python files from the extracted package to the correct folders in the **working** directory:
-     - `AutoFishMultiSpotTask.py` → `[working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
-     - `SkillSpeedTask.py` → `[working folder]\src\tasks\trigger\SkillSpeedTask.py`
+   - **Automatically copies** all files from the extracted package:
+     - Python files:
+       - `AutoFishMultiSpotTask.py` → `[working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
+       - `SkillSpeedTask.py` → `[working folder]\src\tasks\trigger\SkillSpeedTask.py`
+     - Image files:
+       - `mod\fish\` folder → `[working folder]\mod\fish\` (all PNG files)
+     - Asset files:
+       - `assets\` folder → `[working folder]\assets\` (result.json and images/)
+       - **Important**: If you already have an `assets\` folder, it will be automatically backed up to `assets - original\` before replacement
    - **Automatically adds** tasks to `config.py` in the **working** folder:
      - Adds `AutoFishMultiSpotTask` to `onetime_tasks` list
      - Adds `SkillSpeedTask` to `trigger_tasks` list
    - **Important**: The script ONLY works with the **working** folder (`ok-dna\data\apps\ok-dna\working`), NOT the repo folder
-   - The script will automatically find your ok-dna installation
-   - **Note**: Make sure the extracted package files (Python files) are accessible - the script looks for them in the same directory or extracted package structure
+   - The script will automatically find your ok-dna installation and all files in the extracted package
+   - **Note**: Make sure you run the script from the extracted package directory (where the files are located)
    - Or manually add these lines to `config.py` in the **working** folder (NOT repo folder):
      - In `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
      - In `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
-6. Restart ok-dna and the tasks will appear in your task list
+5. Restart ok-dna and the tasks will appear in your task list
 
 ### Method 2: Manual Installation
+
+**Note**: Method 1 (automatic installation) is recommended. Only use manual installation if the automatic script doesn't work for your setup.
 
 1. Download the source files
 2. **Important**: Copy files to your ok-dna **working** folder:
@@ -101,6 +104,7 @@ After downloading, extract the zip file and follow the installation instructions
 5. Copy the entire `mod\fish\` folder (not just the PNG files) to your ok-dna working `mod\` folder
    - This maintains the proper folder structure: `mod\fish\*.png`
 6. If `assets\` folder is included, copy it to your ok-dna working folder
+   - **Important**: If you already have an `assets\` folder, back it up first to `assets - original\`
 7. **Important**: Edit `src/config.py` in the **working** folder (NOT the repo folder) and add:
    - To `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
    - To `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
