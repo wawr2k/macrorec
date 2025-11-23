@@ -66,20 +66,29 @@ After downloading, extract the zip file and follow the installation instructions
 1. Download the latest release from the GitHub Releases page
 2. Extract the zip file to a temporary location
 3. **Important**: Copy files to your ok-dna **working** folder, not the repo folder:
-   - Working folder location: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
-   - Do NOT copy to the `repo` folder - use the `working` folder instead
+   - **Working folder location**: `C:\Users\[YourUsername]\AppData\Local\ok-dna\data\apps\ok-dna\working\`
+   - **Do NOT copy to the `repo` folder** - ok-dna runs from the `working` folder, not the repo folder
+   - The installation script (`add_autofish_to_config.bat`) automatically uses the working folder
 4. Copy files to your ok-dna working installation:
    - Copy `AutoFishMultiSpotTask.py` to: `[ok-dna working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
    - Copy `SkillSpeedTask.py` to: `[ok-dna working folder]\src\tasks\trigger\SkillSpeedTask.py`
    - Copy the `mod\fish\` folder to: `[ok-dna working folder]\mod\fish\`
    - If `assets\` folder is included, copy it to: `[ok-dna working folder]\assets\`
    - **Important**: If you already have an `assets\` folder, it will be backed up to `assets - original\` before replacement
-5. Run `add_autofish_to_config.bat` to automatically add the tasks to `config.py`
+5. Run `add_autofish_to_config.bat` to automatically install everything:
+   - **Automatically finds** your ok-dna **working** directory (NOT the repo folder)
+   - **Automatically copies** Python files to the correct folders in the **working** directory:
+     - `AutoFishMultiSpotTask.py` → `[working folder]\src\tasks\fullauto\AutoFishMultiSpotTask.py`
+     - `SkillSpeedTask.py` → `[working folder]\src\tasks\trigger\SkillSpeedTask.py`
+   - **Automatically adds** tasks to `config.py` in the **working** folder:
+     - Adds `AutoFishMultiSpotTask` to `onetime_tasks` list
+     - Adds `SkillSpeedTask` to `trigger_tasks` list
+   - **Important**: The script ONLY works with the **working** folder (`ok-dna\data\apps\ok-dna\working`), NOT the repo folder
    - The script will automatically find your ok-dna installation
-   - Or manually add these lines to `config.py`:
+   - Or manually add these lines to `config.py` in the **working** folder (NOT repo folder):
      - In `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
      - In `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
-6. Restart ok-dna and the task will appear in your task list
+6. Restart ok-dna and the tasks will appear in your task list
 
 ### Method 2: Manual Installation
 
@@ -92,7 +101,7 @@ After downloading, extract the zip file and follow the installation instructions
 5. Copy the entire `mod\fish\` folder (not just the PNG files) to your ok-dna working `mod\` folder
    - This maintains the proper folder structure: `mod\fish\*.png`
 6. If `assets\` folder is included, copy it to your ok-dna working folder
-7. Edit `src/config.py` in the working folder and add:
+7. **Important**: Edit `src/config.py` in the **working** folder (NOT the repo folder) and add:
    - To `onetime_tasks` list: `["src.tasks.fullauto.AutoFishMultiSpotTask", "AutoFishMultiSpotTask"],`
    - To `trigger_tasks` list: `["src.tasks.trigger.SkillSpeedTask", "SkillSpeedTask"],`
 8. Restart ok-dna
@@ -121,6 +130,67 @@ After downloading, extract the zip file and follow the installation instructions
    - **Chance Used (Bigger Fish)**: Number of special chances used
    - **Current Phase**: Current fishing phase (Start/Fight/End)
    - **Status**: Current task status
+
+### Skill Speed
+
+**Skill Speed** is a trigger task that provides hotkey-activated combat speed techniques. It runs in the background and activates when you press the configured hotkeys.
+
+#### How to Use:
+
+1. Navigate to the **"Chaoga's mod"** tab in the sidebar
+2. Find **"Skill Speed"** in the task list
+3. **Enable the task** (toggle switch) - The task must be enabled to listen for hotkeys
+4. Configure your hotkeys and technique settings (see Configuration Options below)
+5. **The task runs automatically** - No need to click "Start". Just press your configured hotkeys during gameplay
+
+#### Available Techniques:
+
+1. **Rapid Fire Cancel** (Default: F6)
+   - **What it does**: Holds Right Click and rapidly spams Ctrl
+   - **Use case**: Rapid fire attacks
+   - **Config options**:
+     - Hotkey (default: F6)
+     - Interval between Ctrl presses (default: 0.1 seconds)
+     - Duration to hold right click (default: 1.0 seconds)
+
+2. **Rhythm Technique** (Default: F7)
+   - **What it does**: Executes E (skill) → Hold Left Click (charge) → Right Click (shoot)
+   - **Use case**: Rhythm combo for optimal damage
+   - **Config options**:
+     - Hotkey (default: F7)
+     - Skill delay (default: 0.05 seconds)
+     - Charge duration (default: 0.1 seconds)
+     - Shoot delay (default: 0.05 seconds)
+
+3. **Quick Skill Cancel** (Default: F8)
+   - **What it does**: Executes E (skill) → Right Click immediately
+   - **Use case**: Quick skill cancel for faster combos
+   - **Config options**:
+     - Hotkey (default: F8)
+     - Delay between skill and cancel (default: 0.05 seconds)
+
+4. **Skill Charge Combo** (Default: F9)
+   - **What it does**: Executes Skill → Charge → Skill combo
+   - **Use case**: Extended combo sequences
+   - **Config options**:
+     - Hotkey (default: F9)
+     - Delay between actions (default: 0.1 seconds)
+
+5. **Change Char** (Default: F10)
+   - **What it does**: Changes character to refresh Boxie and **instantly refresh Geniemon cooldown**
+   - **Use case**: Quick character switching and Geniemon cooldown reset
+   - **Important**: Character switching instantly refreshes the Geniemon cooldown, allowing you to use Geniemon abilities more frequently
+   - **Config options**:
+     - Hotkey (default: F10)
+
+#### Important Notes:
+
+- **Trigger Task**: Skill Speed is a trigger task, not a one-time task. It stays enabled and listens for hotkeys.
+- **Hotkeys**: Default hotkeys are F6-F10 to avoid conflicts with game controls (F1-F5 are used in-game)
+- **Game Window Focus**: Hotkeys only work when the game window is in focus
+- **Enable/Disable**: Use the toggle switch to enable/disable the task. When disabled, hotkeys won't work.
+- **Individual Technique Control**: Each technique can be individually enabled/disabled in the config
+- **Custom Hotkeys**: You can change any hotkey to your preferred key in the task configuration
 
 ## Configuration Options
 
@@ -158,7 +228,7 @@ After downloading, extract the zip file and follow the installation instructions
 | Enable Skill Charge Combo | Enable/disable skill charge combo | True |
 | Skill Charge Combo Hotkey | Hotkey to activate skill charge combo | F9 |
 | Skill Charge Combo Delay | Delay between actions (seconds) | 0.1 |
-| Enable Change Char | Enable/disable change character | True |
+| Enable Change Char | Enable/disable change character (instantly refreshes Geniemon cooldown) | True |
 | Change Char Hotkey | Hotkey to change character | F10 |
 
 ## How It Works
