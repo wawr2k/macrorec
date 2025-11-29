@@ -2,6 +2,8 @@
 
 A collection of automation tasks for [ok-dna](https://github.com/BnanZ0/ok-duet-night-abyss), the automation framework for Duet Night Abyss. This package includes:
 
+https://drive.google.com/file/d/1i_n-xcdi8Fuzz7DPd23chQ9JzonJjptz/view?usp=drive_link for a English Keyboard/Mouse recorder to make your own mods.
+
 - **AutoFishMultiSpotTask**: An enhanced multi-spot fishing automation task that automatically rotates through multiple fishing spots (Purgatorio, Icelake, and Sewers) with intelligent navigation, real-time statistics tracking, and optimized fishing logic.
 
 - **SkillSpeedTask**: A trigger task providing hotkey-activated combat speed techniques including Rhythm, Quick Skill Cancel, Rapid Fire, Skill Charge Combo, and character switching.
@@ -485,4 +487,5 @@ If you encounter any issues or have questions:
 ---
 
 **Note**: This task requires ok-dna to function. Make sure you have ok-dna properly installed and configured before using this task.
+
 
