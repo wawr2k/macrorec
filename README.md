@@ -151,7 +151,7 @@ Both mods will work together! You'll have:
 ## Credits
 
 - Original skill system by Choaga
-- Compatible with Mouse Jitter mod by wawr2k
+- Compatible with Mouse Jitter
 - Built for ok-dna by BnanZ0
 
 ## Support
@@ -164,3 +164,4 @@ For issues or questions:
 ---
 
 **Note**: This mod modifies Python source files. Always keep backups and test thoroughly before using in production!
+
