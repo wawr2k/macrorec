@@ -186,25 +186,6 @@ A trigger task that enhances combat performance through optimized skill timing.
 3. Configure your preferred settings
 4. Run any combat task - skill speed will activate automatically
 
----
-
-# Feature 4: Auto-Fish Config Script
-
-Automatically adds fishing configuration to your ok-dna setup.
-
-## Installation
-
-1. Double-click `add_autofish_to_config.bat`
-2. Confirm the ok-dna installation path
-3. Script will add fishing-related configurations
-
-This script:
-- Adds fishing task configurations
-- Sets up default fishing parameters
-- Configures fishing-related UI elements
-
----
-
 # Combining Features
 
 You can use any combination of these features:
@@ -339,3 +320,4 @@ For issues or questions:
 ---
 
 **Note**: These mods modify Python source files and add new assets. Always keep backups and test thoroughly!
+
