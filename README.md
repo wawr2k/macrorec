@@ -15,7 +15,7 @@ This mod pack contains THREE major features:
 ✅ **This mod is fully compatible with the Mouse Jitter AFK Bypass mod!**
 
 If you want BOTH features:
-1. Install the Mouse Jitter mod first (from `../mousejitter/`)
+1. Install the Mouse Jitter mod first (from https://github.com/wawr2k/mousejitterdna)
 2. Then run this Choaga mod scripts to add features
 
 The mods work together seamlessly since they both extend `CommissionsTask`.
@@ -320,4 +320,5 @@ For issues or questions:
 ---
 
 **Note**: These mods modify Python source files and add new assets. Always keep backups and test thoroughly!
+
 
